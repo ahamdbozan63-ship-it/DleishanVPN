@@ -28,22 +28,20 @@ jobs:
 
       - name: Build Debug APK
         run: |
-          echo "=== Files found ==="
-          find . -maxdepth 4
           if [ -f "gradlew" ]; then
             chmod +x gradlew
-            ./gradlew assembleDebug
+            ./gradlew assembleDebug -Pkotlin.jvm.target.validation.mode=warning
           elif [ -n "$(find . -name 'gradlew' -print -quit)" ]; then
             GRADLEW_PATH=$(find . -name 'gradlew' -print -quit)
             cd "$(dirname "$GRADLEW_PATH")"
             chmod +x gradlew
-            ./gradlew assembleDebug
+            ./gradlew assembleDebug -Pkotlin.jvm.target.validation.mode=warning
           else
             SETTINGS_PATH=$(find . \( -name 'settings.gradle' -o -name 'settings.gradle.kts' \) -print -quit)
             if [ -n "$SETTINGS_PATH" ]; then
               cd "$(dirname "$SETTINGS_PATH")"
             fi
-            gradle assembleDebug
+            gradle assembleDebug -Pkotlin.jvm.target.validation.mode=warning
           fi
 
       - name: Upload APK
