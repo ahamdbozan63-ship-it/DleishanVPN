@@ -28,11 +28,23 @@ jobs:
 
       - name: Build Debug APK
         run: |
-          GRADLEW_PATH=$(find . -name "gradlew" -print -quit)
-          PROJECT_DIR=$(dirname "$GRADLEW_PATH")
-          cd "$PROJECT_DIR"
-          chmod +x gradlew
-          ./gradlew assembleDebug
+          echo "=== Files found ==="
+          find . -maxdepth 4
+          if [ -f "gradlew" ]; then
+            chmod +x gradlew
+            ./gradlew assembleDebug
+          elif [ -n "$(find . -name 'gradlew' -print -quit)" ]; then
+            GRADLEW_PATH=$(find . -name 'gradlew' -print -quit)
+            cd "$(dirname "$GRADLEW_PATH")"
+            chmod +x gradlew
+            ./gradlew assembleDebug
+          else
+            SETTINGS_PATH=$(find . \( -name 'settings.gradle' -o -name 'settings.gradle.kts' \) -print -quit)
+            if [ -n "$SETTINGS_PATH" ]; then
+              cd "$(dirname "$SETTINGS_PATH")"
+            fi
+            gradle assembleDebug
+          fi
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
